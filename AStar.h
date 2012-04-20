@@ -36,11 +36,11 @@ typedef struct __ASNeighborList *ASNeighborList;
 typedef struct __ASPath *ASPath;
 
 typedef struct {
-    size_t  nodeSize;                                                               // the size of the structure being used for the nodes - important since nodes are copied into the resulting path
-    void    (*nodeNeighbors)(ASNeighborList neighbors, void *node, void *context);  // add nodes to the neighbor list if they are connected to this node
-    float   (*pathCostHeuristic)(void *fromNode, void *toNode, void *context);      // estimated cost to transition from the first node to the second node -- optional, uses 0 if not specified
-    int     (*earlyExit)(size_t visitedCount, void *visitingNode, void *context);   // early termination, return 1 for success, -1 for failure, 0 to continue searching -- optional
-    int     (*nodeComparator)(void *node1, void *node2, void *context);             // must return a sort order for the nodes (-1, 0, 1) -- optional, uses memcmp if not specified
+    size_t  nodeSize;                                                                               // the size of the structure being used for the nodes - important since nodes are copied into the resulting path
+    void    (*nodeNeighbors)(ASNeighborList neighbors, void *node, void *context);                  // add nodes to the neighbor list if they are connected to this node
+    float   (*pathCostHeuristic)(void *fromNode, void *toNode, void *context);                      // estimated cost to transition from the first node to the second node -- optional, uses 0 if not specified
+    int     (*earlyExit)(size_t visitedCount, void *visitingNode, void *goalNode, void *context);   // early termination, return 1 for success, -1 for failure, 0 to continue searching -- optional
+    int     (*nodeComparator)(void *node1, void *node2, void *context);                             // must return a sort order for the nodes (-1, 0, 1) -- optional, uses memcmp if not specified
 } ASPathNodeSource;
 
 // use in the nodeNeighbors callback to return neighbors

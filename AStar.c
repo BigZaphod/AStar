@@ -225,19 +225,21 @@ static inline Node GetNode(VisitedNodes nodes, void *nodeKey)
     }
     
     // looks it up in the index, if it's not found it inserts a new record in the sorted index and the nodeRecords array and returns a reference to it
-    int first = 0;
+    size_t first = 0;
 
     if (nodes->nodeRecordsCount > 0) {
-        int last = nodes->nodeRecordsCount-1;
+        size_t last = nodes->nodeRecordsCount-1;
 
         while (first <= last) {
-            const int mid = (first + last) / 2;
+            const size_t mid = (first + last) / 2;
             const int comp = NodeKeyCompare(NodeMake(nodes, nodes->nodeRecordsIndex[mid]), nodeKey);
 
             if (comp < 0) {
                 first = mid + 1;
-            } else if (comp > 0) {
+            } else if (comp > 0 && mid > 0) {
                 last = mid - 1;
+            } else if (comp > 0) {
+                break;
             } else {
                 return NodeMake(nodes, nodes->nodeRecordsIndex[mid]);
             }
@@ -427,7 +429,7 @@ ASPath ASPathCreate(const ASPathNodeSource *source, void *context, void *startNo
     // perform the A* algorithm
     while (HasOpenNode(visitedNodes) && !NodeIsGoal((current = GetOpenNode(visitedNodes)))) {
         if (source->earlyExit) {
-            const int shouldExit = source->earlyExit(visitedNodes->nodeRecordsCount, GetNodeKey(current), context);
+            const int shouldExit = source->earlyExit(visitedNodes->nodeRecordsCount, GetNodeKey(current), goalNodeKey, context);
 
             if (shouldExit > 0) {
                 SetNodeIsGoal(current);
